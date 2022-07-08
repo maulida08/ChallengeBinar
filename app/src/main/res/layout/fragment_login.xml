@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:background="@drawable/gradient_background"
+    tools:context=".ui.login.LoginFragment">
+
+    <ImageView
+        android:src="@drawable/ic_chill"
+        android:contentDescription="@string/image"
+        android:layout_width="match_parent"
+        android:layout_height="256dp" />
+
+    <TextView
+        android:id="@+id/tv_login"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="16dp"
+        android:text="@string/signin"
+        android:textSize="32sp"
+        android:textColor="@color/white"
+        android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
+        android:layout_gravity="center_horizontal"/>
+
+    <LinearLayout
+        android:background="@drawable/card"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/til_username"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/username"
+            android:layout_marginStart="24dp"
+            android:layout_marginEnd="24dp"
+            android:layout_marginTop="24dp"
+            android:layout_marginBottom="8dp"
+            app:startIconDrawable="@drawable/ic_baseline_person"
+            app:errorEnabled="true"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/et_username"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/til_password"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/password"
+            android:layout_marginStart="24dp"
+            android:layout_marginEnd="24dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="8dp"
+            app:passwordToggleEnabled="true"
+            app:startIconDrawable="@drawable/ic_baseline_lock"
+            app:layout_constraintTop_toBottomOf="@id/til_username"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:errorEnabled="true"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/et_password"
+                android:inputType="textPassword"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:weightSum="100"
+            android:layout_marginHorizontal="24dp">
+
+            <CheckBox
+                android:text="@string/remember_me"
+                android:layout_gravity="start"
+                android:layout_weight="50"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_forgot"
+                android:text="@string/forgot_pss"
+                style="@style/Widget.Material3.Button.TextButton"
+                android:textSize="12sp"
+                android:layout_gravity="end"
+                android:layout_weight="50"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_login"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="18dp"
+            android:text="@string/signin"
+            android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
+            android:layout_gravity="center" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:weightSum="100"
+            android:layout_marginHorizontal="24dp">
+
+            <TextView
+                android:id="@+id/tv_dont_have_account"
+                android:text="@string/don_t_have_an_account"
+                android:textAppearance="@style/ShapeAppearance.Material3.SmallComponent"
+                android:layout_weight="50"
+                android:gravity="end"
+                android:textSize="11sp"
+                android:paddingVertical="4dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_register_text"
+                android:text="@string/signin"
+                style="@style/Widget.Material3.Button.TextButton"
+                android:layout_weight="50"
+                android:gravity="start"
+                android:textSize="11sp"
+                android:paddingVertical="4dp"
+                android:layout_width="match_parent"
+                android:layout_height="32dp"/>
+        </LinearLayout>
+
+    </LinearLayout>
+</LinearLayout>
