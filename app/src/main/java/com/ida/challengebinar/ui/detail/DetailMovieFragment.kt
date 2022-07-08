@@ -27,7 +27,8 @@ class DetailMovieFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_detail_movie, container, false)
+        _binding = FragmentDetailMovieBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -65,7 +66,7 @@ class DetailMovieFragment : Fragment() {
 
             binding.tvInputDate.text = it.releaseDate
 
-            binding.tvDuration.text = it.runtime.toString()
+            binding.tvInputDuration.text = it.runtime.toString()
 
             binding.tvDetail.text = it.overview
 

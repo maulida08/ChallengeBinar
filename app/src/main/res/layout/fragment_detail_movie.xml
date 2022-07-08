@@ -36,7 +36,7 @@
         app:layout_constraintBottom_toBottomOf="@id/iv_image"
         android:layout_marginStart="16dp"
         app:cardCornerRadius="12dp"
-        android:elevation="8dp"
+        android:elevation="18dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content">
         
@@ -44,7 +44,7 @@
             android:id="@+id/iv_poster"
             android:src="@drawable/ic_baseline_image"
             android:contentDescription="@string/image"
-            android:scaleType="fitXY"
+            android:scaleType="centerCrop"
             android:layout_width="100dp"
             android:layout_height="130dp" />
 
@@ -88,6 +88,7 @@
         android:layout_marginEnd="16dp"
         android:layout_marginStart="4dp"
         android:maxLines="1"
+        android:textColor="@color/white"
         android:layout_width="0dp"
         android:layout_height="wrap_content" />
 
