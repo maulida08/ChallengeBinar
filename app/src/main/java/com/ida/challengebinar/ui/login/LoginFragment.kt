@@ -6,26 +6,19 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.lifecycleScope
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.Snackbar
 import com.ida.challengebinar.R
 import com.ida.challengebinar.data.UserDataStoreManager
-import com.ida.challengebinar.data.room.UserRepository
 import com.ida.challengebinar.databinding.FragmentLoginBinding
-import com.ida.challengebinar.viewmodel.MainViewModel
-import com.ida.challengebinar.viewmodel.ViewModelFactory
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class LoginFragment : Fragment() {
     private var _binding: FragmentLoginBinding? = null
     private val binding get() = _binding!!
-    private lateinit var repository: UserRepository
-    private lateinit var viewModel: MainViewModel
-    private lateinit var pref: UserDataStoreManager
+    private val loginViewModel: LoginViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -38,13 +31,10 @@ class LoginFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        repository = UserRepository(requireContext())
 
-        pref = UserDataStoreManager(requireContext())
-        viewModel = ViewModelProvider(requireActivity(), ViewModelFactory(pref))[MainViewModel::class.java]
-
-        viewModel.getDataStore().observe(viewLifecycleOwner) {
-            if (it.toString() != UserDataStoreManager.DEFAULT_USERNAME) {
+        loginViewModel.getDataStore()
+        loginViewModel.userDataStore.observe(viewLifecycleOwner) {
+            if (it.id != UserDataStoreManager.DEFAULT_ID) {
                 findNavController().navigate(R.id.action_loginFragment_to_homeFragment)
             }
         }
@@ -59,29 +49,28 @@ class LoginFragment : Fragment() {
 
             when {
                 etUsername.isNullOrEmpty() -> {
-                    binding.tilUsername.error = getString(R.string.username_belum_diisi)
+                    Toast.makeText(requireContext(), getString(R.string.username_belum_diisi), Toast.LENGTH_SHORT).show()
                 }
                 etPassword.isNullOrEmpty() -> {
-                    binding.tilPassword.error = getString(R.string.password_belum_diisi)
+                    Toast.makeText(requireContext(), getString(R.string.password_belum_diisi), Toast.LENGTH_SHORT).show()
                 }
                 else -> {
-                    lifecycleScope.launch(Dispatchers.IO) {
-                        val result = repository.checkUser(etUsername.toString(), etPassword.toString())
-
-                        runBlocking(Dispatchers.Main) {
-                            if (result == false) {
-                                val snackbar = Snackbar.make(it,"Login gagal, coba periksa email atau password anda", Snackbar.LENGTH_INDEFINITE)
-                                snackbar.setAction("Oke") {
-                                    snackbar.dismiss()
-                                }
-                                snackbar.show()
-                            } else {
-                                Toast.makeText(context, "Login berhasil", Toast.LENGTH_SHORT).show()
-                                findNavController().navigate(R.id.action_loginFragment_to_homeFragment)
+                    loginViewModel.getUser(etUsername.toString())
+                    loginViewModel.login.observe(viewLifecycleOwner) {
+                        if (it == null) {
+                            val snackbar = Snackbar.make(
+                                binding.root,
+                                "Login gagal, coba periksa email atau password anda",
+                                Snackbar.LENGTH_INDEFINITE
+                            )
+                            snackbar.setAction("Oke") {
+                                snackbar.dismiss()
                             }
-                        }
-                        if (result != false){
-                            viewModel.saveDataStore(etUsername.toString())
+                            snackbar.show()
+                        } else {
+                            loginViewModel.saveDataStore(it)
+                            Toast.makeText(context, "Login berhasil", Toast.LENGTH_SHORT).show()
+                            findNavController().navigate(R.id.action_loginFragment_to_homeFragment)
                         }
                     }
                 }

@@ -9,10 +9,10 @@ import retrofit2.http.Path
 interface ApiService {
 
     @GET("movie/popular?api_key=7fd85d1ae16130aa2bbe3d705027b5be")
-    fun getAllMoviePopular() : Call<GetAllMoviePopular>
+    suspend fun getAllMoviePopular() : GetAllMoviePopular
 
     @GET("movie/{movie_id}?api_key=7fd85d1ae16130aa2bbe3d705027b5be")
-    fun getALLDetail(@Path("movie_id") movie_id: Int) : Call<GetDetailMovie>
+    suspend fun getALLDetail(@Path("movie_id") movie_id: Int) : GetDetailMovie
 
 
 }

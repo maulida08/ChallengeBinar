@@ -15,7 +15,6 @@ class PopularAdapter(private val onItemClick: OnClickListener):
 
     private val IMAGE_BASE ="https://image.tmdb.org/t/p/w500/"
 
-
     private val diffCallBack = object : DiffUtil.ItemCallback<Result>(){
         override fun areItemsTheSame(
             oldItem: Result,
@@ -29,6 +28,7 @@ class PopularAdapter(private val onItemClick: OnClickListener):
     }
 
     private val differ = AsyncListDiffer(this, diffCallBack)
+
     fun submitData(value: List<Result>?) = differ.submitList(value)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PopularAdapter.ViewHolder {

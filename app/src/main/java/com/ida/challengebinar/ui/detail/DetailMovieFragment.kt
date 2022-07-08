@@ -5,20 +5,22 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.lifecycle.ViewModelProvider
-import androidx.navigation.NavArgs
+import android.widget.Toast
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.bumptech.glide.Glide
 import com.ida.challengebinar.R
+import com.ida.challengebinar.data.service.Status
 import com.ida.challengebinar.databinding.FragmentDetailMovieBinding
-import com.ida.challengebinar.viewmodel.DetailViewModel
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class DetailMovieFragment : Fragment() {
     private var _binding: FragmentDetailMovieBinding? = null
     private val binding get() = _binding!!
+    private val detailViewModel: DetailViewModel by viewModels()
     private val args: DetailMovieFragmentArgs by navArgs()
-    private lateinit var viewModel: DetailViewModel
 
     private val imageBase = "https://image.tmdb.org/t/p/w500/"
 
@@ -35,47 +37,85 @@ class DetailMovieFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         val idMovie = args.id
-        viewModel = ViewModelProvider(this)[DetailViewModel::class.java]
-        viewModel.getAllDetail(idMovie)
-        viewModel.detailMovie.observe(viewLifecycleOwner){
+        detailViewModel.getAllDetail(idMovie)
+        detailViewModel.detailMovie.observe(viewLifecycleOwner) {
+            when(it.status){
+                Status.LOADING -> {
+                    binding.tvDetail.visibility = View.GONE
+                    binding.tvTaglineValue.visibility = View.GONE
+                    binding.tvTitle.visibility = View.GONE
+                    binding.tvTagline.visibility = View.GONE
+                    binding.tvInputDuration.visibility = View.GONE
+                    binding.tvMinutes.visibility = View.GONE
+                    binding.tvDescription.visibility = View.GONE
+                    binding.tvDate.visibility = View.GONE
+                    binding.tvInputDate.visibility = View.GONE
+                    binding.tvDuration.visibility = View.GONE
+                    binding.ivImage.visibility = View.GONE
+                    binding.ivPoster.visibility = View.GONE
+                    binding.llDetail.visibility = View.GONE
+                    binding.cvPoster.visibility = View.GONE
+                    binding.btnBack.visibility = View.GONE
+                }
+                Status.SUCCESS -> {
+                    binding.tvDetail.visibility = View.VISIBLE
+                    binding.tvTaglineValue.visibility = View.VISIBLE
+                    binding.tvTitle.visibility = View.VISIBLE
+                    binding.tvTagline.visibility = View.VISIBLE
+                    binding.tvInputDuration.visibility = View.VISIBLE
+                    binding.tvMinutes.visibility = View.VISIBLE
+                    binding.tvDescription.visibility = View.VISIBLE
+                    binding.tvDate.visibility = View.VISIBLE
+                    binding.tvInputDate.visibility = View.VISIBLE
+                    binding.tvDuration.visibility = View.VISIBLE
+                    binding.ivImage.visibility = View.VISIBLE
+                    binding.ivPoster.visibility = View.VISIBLE
+                    binding.llDetail.visibility = View.VISIBLE
+                    binding.cvPoster.visibility = View.VISIBLE
+                    binding.btnBack.visibility = View.VISIBLE
 
-            val image = it.backdropPath
-            if (image == null) {
-                Glide.with(binding.root
-                ).load(R.drawable.default_image)
-                    .into(binding.ivImage)
-            } else {
-                Glide.with(binding.root
-                ).load(imageBase + image)
-                    .into(binding.ivImage)
-            }
+                    val image = it.data?.backdropPath
+                    if (image == null) {
+                        Glide.with(binding.root
+                        ).load(R.drawable.default_image)
+                            .into(binding.ivImage)
+                    } else {
+                        Glide.with(binding.root
+                        ).load(imageBase + image)
+                            .into(binding.ivImage)
+                    }
 
-            val poster = it.posterPath
-            if (poster == null) {
-                Glide.with(binding.root
-                ).load(R.drawable.ic_baseline_image)
-                    .into(binding.ivPoster)
-            } else {
-                Glide.with(binding.root
-                ).load(imageBase + image)
-                    .into(binding.ivPoster)
-            }
+                    val poster = it.data?.posterPath
+                    if (poster == null) {
+                        Glide.with(binding.root
+                        ).load(R.drawable.ic_baseline_image)
+                            .into(binding.ivPoster)
+                    } else {
+                        Glide.with(binding.root
+                        ).load(imageBase + image)
+                            .into(binding.ivPoster)
+                    }
 
-            binding.tvTitle.text = it.title
-            binding.tvTitle.isSelected = true
+                    binding.tvTitle.text = it.data?.title
+                    binding.tvTitle.isSelected = true
 
-            binding.tvInputDate.text = it.releaseDate
+                    binding.tvInputDate.text = it.data?.releaseDate
 
-            binding.tvInputDuration.text = it.runtime.toString()
+                    binding.tvInputDuration.text = it.data?.runtime.toString()
 
-            binding.tvDetail.text = it.overview
+                    binding.tvDetail.text = it.data?.overview
 
-            val tagLine = it.tagline
-            if (tagLine == "") {
-                binding.tvTagline.visibility = View.GONE
-                binding.tvTaglineValue.visibility = View.GONE
-            } else {
-                binding.tvTaglineValue.text = it.tagline
+                    val tagLine = it.data?.tagline
+                    if (tagLine == "") {
+                        binding.tvTagline.visibility = View.GONE
+                        binding.tvTaglineValue.visibility = View.GONE
+                    } else {
+                        binding.tvTaglineValue.text = it.data?.tagline
+                    }
+                }
+                Status.ERROR -> {
+                    Toast.makeText(context, "Error ${it.message}", Toast.LENGTH_SHORT).show()
+                }
             }
         }
 
@@ -90,3 +130,4 @@ class DetailMovieFragment : Fragment() {
     }
 
 }
+

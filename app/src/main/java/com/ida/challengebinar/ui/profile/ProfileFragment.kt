@@ -12,46 +12,23 @@ import android.widget.Toast
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.net.toUri
-import androidx.lifecycle.lifecycleScope
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.github.dhaval2404.imagepicker.ImagePicker
 import com.ida.challengebinar.R
-import com.ida.challengebinar.data.UserDataStoreManager
 import com.ida.challengebinar.data.room.UserEntity
-import com.ida.challengebinar.data.room.UserRepository
 import com.ida.challengebinar.databinding.FragmentProfileBinding
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
+import dagger.hilt.android.AndroidEntryPoint
 import java.io.File
 
+@AndroidEntryPoint
 class ProfileFragment : Fragment() {
     private var _binding: FragmentProfileBinding? = null
     private val binding get() = _binding!!
-    private lateinit var repository: UserRepository
+    private val profileViewModel: ProfileViewModel by viewModels()
     private val args : ProfileFragmentArgs by navArgs()
-    private lateinit var pref: UserDataStoreManager
     private var imageUri: Uri? = null
-
-    private val startForProfileImageResult =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
-            val resultCode = result.resultCode
-            val data = result.data
-            when (resultCode) {
-                Activity.RESULT_OK -> {
-                    imageUri = data?.data
-                    loadImage(imageUri)
-
-                }
-                ImagePicker.RESULT_ERROR -> {
-                    Toast.makeText(activity, ImagePicker.getError(data), Toast.LENGTH_SHORT).show()
-                }
-                else -> {
-
-                }
-            }
-        }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -64,9 +41,6 @@ class ProfileFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        repository = UserRepository(requireContext())
-
-        pref = UserDataStoreManager(requireContext())
 
         binding.ivPhoto.setImageURI(args.dataUser.uri.toString().toUri())
         binding.etUsername.setText(args.dataUser.username)
@@ -86,17 +60,21 @@ class ProfileFragment : Fragment() {
                 binding.etPassword.text.toString(),
                 imageUri.toString()
             )
-            lifecycleScope.launch(Dispatchers.IO) {
-                val result = repository.updateUser(user)
-                runBlocking(Dispatchers.Main) {
-                    if (result != 0){
-                        Toast.makeText(requireContext(), "Profile berhasil diupdate", Toast.LENGTH_SHORT).show()
-                    }else{
-                        Toast.makeText(requireContext(), "Profile gagal diupdate", Toast.LENGTH_SHORT).show()
+            profileViewModel.updateUser(user)
+            profileViewModel.update.observe(viewLifecycleOwner) {
+                if (it != null) {
+                    if (it != 0) {
+                        Toast.makeText(
+                            requireContext(), "User berhasil diupdate",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    } else {
+                        Toast.makeText(requireContext(), "User gagal diupdate", Toast.LENGTH_SHORT)
+                            .show()
                     }
                 }
+                findNavController().navigate(R.id.action_profileFragment_to_homeFragment)
             }
-            findNavController().navigate(R.id.action_profileFragment_to_homeFragment)
         }
 
         binding.btnBack.setOnClickListener {
@@ -109,18 +87,34 @@ class ProfileFragment : Fragment() {
                 .setMessage("Apakah anda yakin ingin logout?")
                 .setPositiveButton("Ya") { dialog, _ ->
                     dialog.dismiss()
-                    lifecycleScope.launch(Dispatchers.IO) {
-                        pref.deleteUserFromPref()
-                    }
+                    profileViewModel.deleteUserFromPref()
                     findNavController().navigate(R.id.action_profileFragment_to_loginFragment)
                 }
-                .setNegativeButton("Batal"){ dialog, _ ->
+                .setNegativeButton("Batal") { dialog, _ ->
                     dialog.dismiss()
                 }
                 .show()
         }
-
     }
+
+    private val startForProfileImageResult =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
+            val resultCode = result.resultCode
+            val data = result.data
+            when (resultCode) {
+                Activity.RESULT_OK -> {
+                    imageUri = data?.data
+                    loadImage(imageUri)
+
+                }
+                ImagePicker.RESULT_ERROR -> {
+                    Toast.makeText(activity, ImagePicker.getError(data), Toast.LENGTH_SHORT).show()
+                }
+                else -> {
+
+                }
+            }
+        }
 
     private fun openImagePicker() {
         ImagePicker.with(this)

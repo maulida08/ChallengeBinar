@@ -10,6 +10,7 @@ abstract class AppDatabase: RoomDatabase() {
     abstract fun userDao(): UserDao
 
     companion object {
+        const val DB_NAME = "AppDatabase.db"
         private var INSTANCE : AppDatabase? = null
 
         fun getInstance(context: Context): AppDatabase?{
