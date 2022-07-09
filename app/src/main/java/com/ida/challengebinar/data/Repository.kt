@@ -11,12 +11,10 @@ class Repository(
     private val userDataStore: UserDataStoreManager
 ) {
 
-    // Api
     suspend fun getAllMoviePopular() = apiHelper.getAllMoviePopular()
 
     suspend fun getALLDetail(movie_id: Int) = apiHelper.getALLDetail(movie_id)
 
-    // DataStore
     suspend fun saveUserPref(user: UserEntity) {
         userDataStore.saveUserPref(user)
     }
@@ -29,7 +27,6 @@ class Repository(
         userDataStore.deleteUserFromPref()
     }
 
-    // Room
     suspend fun addUser(user: UserEntity): Long = dbHelper.addUser(user)
 
     suspend fun getUser(username: String): UserEntity {

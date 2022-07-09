@@ -2,7 +2,6 @@ package com.ida.challengebinar.data.service
 
 import com.ida.challengebinar.data.model.GetDetailMovie
 import com.ida.challengebinar.room.GetAllMoviePopular
-import retrofit2.Call
 import retrofit2.http.GET
 import retrofit2.http.Path
 
